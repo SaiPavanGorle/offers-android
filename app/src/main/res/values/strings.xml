@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Offers MVP</string>
+    <string name="empty_offers">No offers available.</string>
+</resources>

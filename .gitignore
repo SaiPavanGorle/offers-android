@@ -1,0 +1,32 @@
+# IDE
+.idea/
+*.iml
+
+# Gradle local state
+.gradle/
+local.properties
+
+# Build outputs
+/build/
+**/build/
+/captures/
+
+# Signing keys and keystores
+*.jks
+*.keystore
+keystore
+
+# Android / emulator / SDK artifacts
+*.apk
+*.ap_
+*.aab
+*.dex
+*.hprof
+*.lock
+*.orig
+*.tmp
+*.log
+
+# OS artifacts
+.DS_Store
+Thumbs.db
