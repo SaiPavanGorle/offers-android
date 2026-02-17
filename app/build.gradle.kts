@@ -18,7 +18,6 @@ android {
 
         buildConfigField("String", "BASE_URL_EMULATOR", "\"http://10.0.2.2:8000/\"")
         buildConfigField("String", "BASE_URL_DEVICE", "\"http://192.168.1.59:8000/\"")
-        buildConfigField("String", "BASE_URL_DEFAULT", "BASE_URL_EMULATOR")
     }
 
     buildFeatures {
