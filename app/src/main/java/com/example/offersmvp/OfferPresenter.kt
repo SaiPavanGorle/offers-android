@@ -5,6 +5,8 @@ class OfferPresenter(
 ) : OfferContract.Presenter {
 
     private var view: OfferContract.View? = null
+    private var currentStore: StoreDto? = null
+    private var currentCampaign: CampaignDto? = null
 
     override fun attach(view: OfferContract.View) {
         this.view = view
@@ -18,16 +20,45 @@ class OfferPresenter(
         val currentView = view ?: return
         currentView.showLoading()
 
-        repository.getActiveOffer(uuid, major, minor) { offer ->
-            val activeView = view ?: return@getActiveOffer
+        repository.getStoreWithCampaign(uuid, major, minor) { store, campaign ->
+            val activeView = view ?: return@getStoreWithCampaign
 
-            if (offer == null) {
+            if (store == null || campaign == null) {
                 activeView.showEmptyState()
             } else {
-                activeView.showOffers(listOf(offer))
+                currentStore = store
+                currentCampaign = campaign
+                activeView.showCampaign(campaign, store)
             }
 
             activeView.hideLoading()
+        }
+    }
+
+    override fun submitEnquiry(message: String) {
+        val activeView = view ?: return
+        val store = currentStore
+        val campaign = currentCampaign
+
+        if (store == null || campaign == null || message.isBlank()) {
+            activeView.showEnquiryFailure("Invalid enquiry details")
+            return
+        }
+
+        val request = EnquiryRequest(
+            storeId = store.storeId,
+            campaignId = campaign.campaignId,
+            deviceAnonId = DeviceIdentityProvider.getDeviceAnonId(),
+            message = message.trim()
+        )
+
+        repository.submitEnquiry(request) { success ->
+            val currentView = view ?: return@submitEnquiry
+            if (success) {
+                currentView.showEnquirySuccess()
+            } else {
+                currentView.showEnquiryFailure("Request failed")
+            }
         }
     }
 }

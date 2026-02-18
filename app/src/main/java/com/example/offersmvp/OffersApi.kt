@@ -1,7 +1,9 @@
 package com.example.offersmvp
 
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface OffersApi {
@@ -11,4 +13,9 @@ interface OffersApi {
         @Query("major") major: Int,
         @Query("minor") minor: Int
     ): Call<StoreByBeaconResponse>
+
+    @POST("v1/public/enquiries")
+    fun submitEnquiry(
+        @Body request: EnquiryRequest
+    ): Call<EnquiryResponse>
 }
