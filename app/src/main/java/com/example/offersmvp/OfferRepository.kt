@@ -7,11 +7,11 @@ import retrofit2.Response
 class OfferRepository(
     private val offersApi: OffersApi = RetrofitClient.offersApi
 ) {
-    fun getActiveOffer(
+    fun getStoreWithCampaign(
         uuid: String,
         major: Int,
         minor: Int,
-        onResult: (Offer?) -> Unit
+        onResult: (StoreDto?, CampaignDto?) -> Unit
     ) {
         offersApi.getStoreByBeacon(uuid, major, minor).enqueue(object : Callback<StoreByBeaconResponse> {
             override fun onResponse(
@@ -19,28 +19,32 @@ class OfferRepository(
                 response: Response<StoreByBeaconResponse>
             ) {
                 if (!response.isSuccessful) {
-                    onResult(null)
+                    onResult(null, null)
                     return
                 }
 
-                val offer = response.body()
-                    ?.activeCampaign
-                    ?.toOffer()
-
-                onResult(offer)
+                val body = response.body()
+                onResult(body?.store, body?.activeCampaign)
             }
 
             override fun onFailure(call: Call<StoreByBeaconResponse>, t: Throwable) {
-                onResult(null)
+                onResult(null, null)
             }
         })
     }
 
-    private fun CampaignDto.toOffer(): Offer {
-        return Offer(
-            id = campaignId,
-            title = title,
-            description = description
-        )
+    fun submitEnquiry(
+        request: EnquiryRequest,
+        onResult: (Boolean) -> Unit
+    ) {
+        offersApi.submitEnquiry(request).enqueue(object : Callback<EnquiryResponse> {
+            override fun onResponse(call: Call<EnquiryResponse>, response: Response<EnquiryResponse>) {
+                onResult(response.isSuccessful)
+            }
+
+            override fun onFailure(call: Call<EnquiryResponse>, t: Throwable) {
+                onResult(false)
+            }
+        })
     }
 }
