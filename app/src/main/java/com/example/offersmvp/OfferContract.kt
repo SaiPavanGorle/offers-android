@@ -3,17 +3,16 @@ package com.example.offersmvp
 interface OfferContract {
     interface View {
         fun showLoading()
-        fun showCampaign(campaign: CampaignDto, store: StoreDto)
-        fun showEmptyState()
+        fun showCampaign(title: String, description: String, validText: String, websiteUrl: String?)
+        fun showError(message: String)
         fun hideLoading()
-        fun showEnquirySuccess()
-        fun showEnquiryFailure(message: String)
+        fun showEnquirySent()
     }
 
     interface Presenter {
         fun attach(view: View)
         fun detach()
         fun loadOffers(uuid: String, major: Int, minor: Int)
-        fun submitEnquiry(message: String)
+        fun submitEnquiry()
     }
 }

@@ -20,14 +20,17 @@ data class CampaignDto(
     @SerializedName("banner_url") val bannerUrl: String?,
     @SerializedName("website_url") val websiteUrl: String?,
     @SerializedName("start_at") val startAt: String?,
-    @SerializedName("end_at") val endAt: String?
+    @SerializedName("end_at") val endAt: String?,
+    @SerializedName("is_active") val isActive: Boolean = false
 )
 
-data class EnquiryRequest(
+data class EnquiryCreate(
+    @SerializedName("enquiry_id") val enquiryId: String,
     @SerializedName("store_id") val storeId: String,
     @SerializedName("campaign_id") val campaignId: String,
     @SerializedName("device_anon_id") val deviceAnonId: String,
-    val message: String
+    val message: String,
+    @SerializedName("created_at") val createdAt: String
 )
 
 data class EnquiryResponse(

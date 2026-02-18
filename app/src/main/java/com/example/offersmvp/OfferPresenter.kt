@@ -20,45 +20,76 @@ class OfferPresenter(
         val currentView = view ?: return
         currentView.showLoading()
 
-        repository.getStoreWithCampaign(uuid, major, minor) { store, campaign ->
-            val activeView = view ?: return@getStoreWithCampaign
-
-            if (store == null || campaign == null) {
-                activeView.showEmptyState()
-            } else {
-                currentStore = store
-                currentCampaign = campaign
-                activeView.showCampaign(campaign, store)
+        repository.fetchStoreAndCampaign(uuid, major, minor) { result ->
+            val activeView = view ?: return@fetchStoreAndCampaign
+            result.onSuccess { response ->
+                val campaign = response.activeCampaign
+                if (campaign == null || !campaign.isActive) {
+                    activeView.showError("No active campaign available.")
+                } else {
+                    currentStore = response.store
+                    currentCampaign = campaign
+                    activeView.showCampaign(
+                        title = campaign.title,
+                        description = campaign.description,
+                        validText = formatValidity(campaign.startAt, campaign.endAt),
+                        websiteUrl = campaign.websiteUrl
+                    )
+                }
+            }.onFailure { error ->
+                activeView.showError(error.message ?: "Failed to load offers")
             }
 
             activeView.hideLoading()
         }
     }
 
-    override fun submitEnquiry(message: String) {
+    override fun submitEnquiry() {
         val activeView = view ?: return
         val store = currentStore
         val campaign = currentCampaign
 
-        if (store == null || campaign == null || message.isBlank()) {
-            activeView.showEnquiryFailure("Invalid enquiry details")
+        if (store == null || campaign == null) {
+            activeView.showError("Invalid enquiry details")
             return
         }
 
-        val request = EnquiryRequest(
+        val request = EnquiryCreate(
+            enquiryId = java.util.UUID.randomUUID().toString(),
             storeId = store.storeId,
             campaignId = campaign.campaignId,
             deviceAnonId = DeviceIdentityProvider.getDeviceAnonId(),
-            message = message.trim()
+            message = "User is interested in this offer",
+            createdAt = java.time.Instant.now().toString()
         )
 
-        repository.submitEnquiry(request) { success ->
-            val currentView = view ?: return@submitEnquiry
-            if (success) {
-                currentView.showEnquirySuccess()
-            } else {
-                currentView.showEnquiryFailure("Request failed")
+        repository.postEnquiry(request) { result ->
+            val currentView = view ?: return@postEnquiry
+            result.onSuccess {
+                currentView.showEnquirySent()
+            }.onFailure { error ->
+                currentView.showError(error.message ?: "Failed to send enquiry")
             }
+        }
+    }
+
+    private fun formatValidity(startAt: String?, endAt: String?): String {
+        if (startAt.isNullOrBlank() || endAt.isNullOrBlank()) {
+            return "Validity unavailable"
+        }
+
+        val start = formatDate(startAt) ?: startAt
+        val end = formatDate(endAt) ?: endAt
+        return "Valid: $start - $end"
+    }
+
+    private fun formatDate(value: String): String? {
+        return try {
+            java.time.OffsetDateTime.parse(value)
+                .toLocalDate()
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy"))
+        } catch (_: Exception) {
+            null
         }
     }
 }

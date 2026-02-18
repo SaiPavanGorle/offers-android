@@ -14,7 +14,7 @@ object RetrofitClient {
         .addInterceptor(loggingInterceptor)
         .build()
 
-    private val retrofit: Retrofit by lazy {
+    val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(AppConfig.baseUrl)
             .client(okHttpClient)
@@ -22,7 +22,7 @@ object RetrofitClient {
             .build()
     }
 
-    val offersApi: OffersApi by lazy {
-        retrofit.create(OffersApi::class.java)
+    val apiService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
     }
 }
