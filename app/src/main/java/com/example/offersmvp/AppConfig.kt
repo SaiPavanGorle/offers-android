@@ -1,16 +1,10 @@
 package com.example.offersmvp
 
-import android.os.Build
-
 object AppConfig {
-    val baseUrl: String
-        get() = if (isEmulator()) BuildConfig.BASE_URL_EMULATOR else BuildConfig.BASE_URL_DEVICE
+    const val DEMO_UUID = "F7826DA6-4FA2-4E98-8024-BC5B71E0893E"
+    const val DEMO_MAJOR = 1001
+    const val DEMO_MINOR = 1
 
-    private fun isEmulator(): Boolean {
-        return Build.FINGERPRINT.startsWith("generic") ||
-            Build.FINGERPRINT.startsWith("unknown") ||
-            Build.MODEL.contains("google_sdk") ||
-            Build.MODEL.contains("Emulator") ||
-            Build.MODEL.contains("Android SDK built for x86")
-    }
+    val baseUrl: String
+        get() = BuildConfig.BASE_URL_DEVICE
 }
