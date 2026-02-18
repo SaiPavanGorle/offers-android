@@ -11,6 +11,6 @@ interface OfferContract {
     interface Presenter {
         fun attach(view: View)
         fun detach()
-        fun loadOffers()
+        fun loadOffers(uuid: String, major: Int, minor: Int)
     }
 }

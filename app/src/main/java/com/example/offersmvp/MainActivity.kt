@@ -8,6 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity(), OfferContract.View {
 
+    companion object {
+        private const val IBEACON_UUID = "F7826DA6-4FA2-4E98-8024-BC5B71E0893E"
+        private const val IBEACON_MAJOR = 1001
+        private const val IBEACON_MINOR = 1
+    }
+
     private lateinit var presenter: OfferContract.Presenter
     private lateinit var progressBar: ProgressBar
     private lateinit var offerText: TextView
@@ -21,7 +27,11 @@ class MainActivity : AppCompatActivity(), OfferContract.View {
 
         presenter = OfferPresenter(OfferRepository())
         presenter.attach(this)
-        presenter.loadOffers()
+        presenter.loadOffers(
+            uuid = IBEACON_UUID,
+            major = IBEACON_MAJOR,
+            minor = IBEACON_MINOR
+        )
     }
 
     override fun onDestroy() {
