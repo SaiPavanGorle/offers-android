@@ -6,10 +6,6 @@
     <string name="im_interested">I\'m Interested</string>
     <string name="validity_unknown">Validity unavailable</string>
     <string name="validity_range">Valid: %1$s - %2$s</string>
-    <string name="enquiry_message_hint">Enter your enquiry message</string>
-    <string name="submit">Submit</string>
-    <string name="cancel">Cancel</string>
-    <string name="enquiry_success">Enquiry submitted successfully</string>
-    <string name="enquiry_failure">Failed to submit enquiry</string>
+    <string name="enquiry_success">Thanks! We&apos;ll contact you.</string>
     <string name="website_unavailable">Website URL unavailable</string>
 </resources>
