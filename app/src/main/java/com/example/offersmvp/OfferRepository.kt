@@ -1,50 +1,46 @@
 package com.example.offersmvp
 
-import com.google.gson.annotations.SerializedName
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class OfferRepository {
-    private val apiService: ApiService = RetrofitClient.retrofit.create(ApiService::class.java)
+class OfferRepository(
+    private val offersApi: OffersApi = RetrofitClient.offersApi
+) {
+    fun getActiveOffer(
+        uuid: String,
+        major: Int,
+        minor: Int,
+        onResult: (Offer?) -> Unit
+    ) {
+        offersApi.getStoreByBeacon(uuid, major, minor).enqueue(object : Callback<StoreByBeaconResponse> {
+            override fun onResponse(
+                call: Call<StoreByBeaconResponse>,
+                response: Response<StoreByBeaconResponse>
+            ) {
+                if (!response.isSuccessful) {
+                    onResult(null)
+                    return
+                }
 
-    suspend fun getOffers(uuid: String, major: Int, minor: Int): List<Offer> {
-        val response = apiService.getStoreCampaign(uuid, major, minor)
-        return response.activeCampaign
-            ?.let { campaign ->
-                Offer(
-                    id = campaign.campaignId,
-                    title = campaign.title,
-                    description = campaign.description
-                )
+                val offer = response.body()
+                    ?.activeCampaign
+                    ?.toOffer()
+
+                onResult(offer)
             }
-            ?.let { offer ->
-                listOf(offer)
+
+            override fun onFailure(call: Call<StoreByBeaconResponse>, t: Throwable) {
+                onResult(null)
             }
-            ?: emptyList()
+        })
+    }
+
+    private fun CampaignDto.toOffer(): Offer {
+        return Offer(
+            id = campaignId,
+            title = title,
+            description = description
+        )
     }
 }
-
-interface ApiService {
-    @GET("v1/public/stores/by-ibeacon")
-    suspend fun getStoreCampaign(
-        @Query("uuid") uuid: String,
-        @Query("major") major: Int,
-        @Query("minor") minor: Int
-    ): StoreCampaignResponse
-}
-
-data class StoreCampaignResponse(
-    val store: StoreDto,
-    @SerializedName("active_campaign") val activeCampaign: CampaignDto?
-)
-
-data class StoreDto(
-    val id: String,
-    val name: String
-)
-
-data class CampaignDto(
-    @SerializedName("campaign_id") val campaignId: String,
-    val title: String,
-    val description: String
-)
