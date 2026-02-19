@@ -44,13 +44,25 @@ class OfferPresenter(
         }
     }
 
-    override fun submitEnquiry() {
+    override fun onOpenWebsiteClicked() {
+        val activeView = view ?: return
+        val websiteUrl = currentCampaign?.websiteUrl ?: currentStore?.websiteUrl
+
+        if (websiteUrl.isNullOrBlank()) {
+            activeView.showToast("Website URL unavailable")
+            return
+        }
+
+        activeView.openUrl(websiteUrl)
+    }
+
+    override fun onInterestedClicked() {
         val activeView = view ?: return
         val store = currentStore
         val campaign = currentCampaign
 
         if (store == null || campaign == null) {
-            activeView.showError("Invalid enquiry details")
+            activeView.showToast("Invalid enquiry details")
             return
         }
 
@@ -59,16 +71,16 @@ class OfferPresenter(
             storeId = store.storeId,
             campaignId = campaign.campaignId,
             deviceAnonId = DeviceIdentityProvider.getDeviceAnonId(),
-            message = "User is interested in this offer",
+            message = "Interested in offer",
             createdAt = java.time.Instant.now().toString()
         )
 
         repository.postEnquiry(request) { result ->
             val currentView = view ?: return@postEnquiry
             result.onSuccess {
-                currentView.showEnquirySent()
+                currentView.showToast("Thanks! We'll contact you.")
             }.onFailure { error ->
-                currentView.showError(error.message ?: "Failed to send enquiry")
+                currentView.showToast(error.message ?: "Failed to send enquiry")
             }
         }
     }

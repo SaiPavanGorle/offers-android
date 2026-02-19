@@ -6,13 +6,15 @@ interface OfferContract {
         fun showCampaign(title: String, description: String, validText: String, websiteUrl: String?)
         fun showError(message: String)
         fun hideLoading()
-        fun showEnquirySent()
+        fun openUrl(url: String)
+        fun showToast(message: String)
     }
 
     interface Presenter {
         fun attach(view: View)
         fun detach()
         fun loadOffers(uuid: String, major: Int, minor: Int)
-        fun submitEnquiry()
+        fun onOpenWebsiteClicked()
+        fun onInterestedClicked()
     }
 }
