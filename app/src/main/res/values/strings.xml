@@ -3,7 +3,7 @@
     <string name="empty_offers">No offers available.</string>
     <string name="campaign_banner">Campaign banner</string>
     <string name="open_website">Open Website</string>
-    <string name="im_interested">I\'m Interested</string>
+    <string name="im_interested">I&apos;m Interested</string>
     <string name="validity_unknown">Validity unavailable</string>
     <string name="validity_range">Valid: %1$s - %2$s</string>
     <string name="enquiry_success">Thanks! We&apos;ll contact you.</string>
