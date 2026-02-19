@@ -25,8 +25,6 @@ class MainActivity : AppCompatActivity(), OfferContract.View {
     private lateinit var openWebsiteButton: Button
     private lateinit var interestedButton: Button
 
-    private var currentWebsiteUrl: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,8 +41,8 @@ class MainActivity : AppCompatActivity(), OfferContract.View {
         openWebsiteButton = findViewById(R.id.openWebsiteButton)
         interestedButton = findViewById(R.id.interestedButton)
 
-        openWebsiteButton.setOnClickListener { openWebsite() }
-        interestedButton.setOnClickListener { presenter.submitEnquiry() }
+        openWebsiteButton.setOnClickListener { presenter.onOpenWebsiteClicked() }
+        interestedButton.setOnClickListener { presenter.onInterestedClicked() }
 
         presenter = OfferPresenter(OfferRepository())
         presenter.attach(this)
@@ -67,8 +65,6 @@ class MainActivity : AppCompatActivity(), OfferContract.View {
     }
 
     override fun showCampaign(title: String, description: String, validText: String, websiteUrl: String?) {
-        currentWebsiteUrl = websiteUrl
-
         titleText.text = title
         descriptionText.text = description
         validityText.text = validText
@@ -90,18 +86,17 @@ class MainActivity : AppCompatActivity(), OfferContract.View {
         progressBar.visibility = View.GONE
     }
 
-    override fun showEnquirySent() {
-        Toast.makeText(this, getString(R.string.enquiry_success), Toast.LENGTH_SHORT).show()
-    }
-
-    private fun openWebsite() {
-        val url = currentWebsiteUrl
-        if (url.isNullOrBlank()) {
-            Toast.makeText(this, getString(R.string.website_unavailable), Toast.LENGTH_SHORT).show()
-            return
-        }
-
+    override fun openUrl(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
+    }
+
+    override fun showToast(message: String) {
+        val resolvedMessage = when (message) {
+            "Thanks! We'll contact you." -> getString(R.string.enquiry_success)
+            "Website URL unavailable" -> getString(R.string.website_unavailable)
+            else -> message
+        }
+        Toast.makeText(this, resolvedMessage, Toast.LENGTH_SHORT).show()
     }
 }

@@ -34,6 +34,12 @@ data class EnquiryCreate(
 )
 
 data class EnquiryResponse(
-    val success: Boolean? = null,
-    val message: String? = null
+    @SerializedName("enquiry_id") val enquiryId: String? = null,
+    @SerializedName("store_id") val storeId: String? = null,
+    @SerializedName("campaign_id") val campaignId: String? = null,
+    @SerializedName("device_anon_id") val deviceAnonId: String? = null,
+    val message: String? = null,
+    val status: String? = null,
+    @SerializedName("created_at") val createdAt: String? = null,
+    @SerializedName("server_received_at") val serverReceivedAt: String? = null
 )
